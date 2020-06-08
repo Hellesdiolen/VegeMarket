@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="memberDAO">
+
+	<select id="getMember" parameterType="String" resultType="member">
+		SELECT * FROM member WHERE id=#{id}
+	</select>
+	
+	<select id="getAdminMember"  parameterType="String" resultType="member">
+		SELECT * FROM member WHERE id=#{id} and adminyn='1'
+	</select>
+	
+	<select id="loginMember" resultType="member">
+		SELECT * FROM member WHERE id=#{id} and pwd=#{pwd}
+	</select>
+
+	<insert id="insertMember">
+		INSERT INTO member(id,pwd,name,email,zip_num,address,phone)
+		VALUES(#{id},#{pwd},#{name},#{email},#{zip_num},#{address},#{phone})
+	</insert>
+	
+	<select id="selectAddressByDong" parameterType="String" resultType="address">
+		SELECT * FROM address WHERE dong like '%'||#{dong}||'%' ORDER BY bunji
+	</select>
+	
+	<select id="getMemberByNameAndEmail" resultType="member">
+		SELECT * FROM member WHERE name=#{name} AND email=#{email}
+	</select>
+
+	<select id="findPassword" resultType="member">
+		SELECT * FROM member WHERE id=#{id} AND name=#{name} AND email=#{email}
+	</select>
+	
+	<select id="listMember" parameterType="String" resultType="member">
+		SELECT *
+		  FROM member
+		 WHERE name LIKE '%'||#{name}||'%'
+		 ORDER BY regdate desc
+	</select>
+
+	<update id="updateMember">
+		update member
+		SET pwd=#{pwd},	email=#{email},zip_num=#{zip_num}
+		,address=#{address},phone=#{phone}
+		WHERE id=#{id}
+	</update>
+	
+	<select id="listWithPaging" parameterType="HashMap"	resultType="member">
+	<![CDATA[
+		SELECT id, name, email, zip_num, address, phone, useyn, regdate
+			FROM
+			  (SELECT rownum rn, id, name, email, zip_num, address, phone, useyn, regdate
+			     FROM member
+			    WHERE id LIKE '%'||#{key}||'%'
+			    AND rownum <= #{criteria.pageNum} * #{criteria.numPerPage}
+			    ORDER BY id
+			   )
+			WHERE rn > (#{criteria.pageNum}-1) * #{criteria.numPerPage}
+			
+	]]>
+	</select>	
+	
+	<update id="goSleepMember" parameterType="String">
+		UPDATE member
+		   SET useyn = 'n'
+		 WHERE id = #{id}
+	</update>
+	
+	<update id="goActivationMember" parameterType="String">
+		UPDATE member
+		   SET useyn = 'y'
+		 WHERE id = #{id}	
+	</update>
+	
+	
+
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="orderDAO">
+
+	<!--  -->
+	<select id="selectMaxOseq" resultType="int">
+		SELECT NVL2(MAX(oseq), MAX(oseq)+1, 1)
+		FROM orders
+	</select>
+
+	<insert id="insertOrder">
+		INSERT INTO orders (oseq, id, name, zip_num, address, phone, memo)
+		VALUES(#{oseq},#{id},#{name},#{zip_num},#{address},#{phone}, #{memo})
+	</insert>
+
+	<insert id="insertOrderDetail">
+		INSERT INTO order_detail (odseq, oseq, pseq, quantity)
+		VALUES(order_detail_seq.nextval,#{oseq},#{pseq},#{quantity})
+	</insert>
+	
+	<select id="listOrderById" resultType="order">
+		SELECT * 
+		  FROM order_view
+		 WHERE id=#{id}
+		   AND result LIKE '%'||#{result}||'%'
+	       AND oseq=#{oseq}
+	</select>
+
+	<select id="selectSeqOrdering" parameterType="String" resultType="Integer">
+		SELECT DISTINCT oseq
+		  FROM order_view
+		 WHERE id=#{id} AND result='1'
+		 ORDER BY oseq DESC
+	</select>
+	
+	<select id="selectSeqOrderComplete" parameterType="String" resultType="Integer">
+		SELECT DISTINCT oseq
+		  FROM order_view
+		 WHERE id=#{id} AND result='2'
+		 ORDER BY oseq DESC
+	</select>	
+
+	<select id="listOrder" parameterType="String" resultType="order">
+		SELECT *
+		  FROM order_view
+		 <if test="value != null">
+		 WHERE name LIKE '%'||#{value}||'%'
+		 </if>
+		 ORDER BY result , oseq desc		 
+	</select>
+
+	
+	<update id="updateOrderResult" parameterType="String">
+		UPDATE order_detail
+		   SET result='2'
+		 WHERE odseq=#{odseq}
+	</update>
+	
+	<select id="countOrderList" parameterType="String"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM order_view
+		WHERE id LIKE '%'||#{id}||'%'
+		ORDER BY oseq
+	</select>	
+	
+	
+	<select id="listWithPaging" parameterType="HashMap"	resultType="order">
+	<![CDATA[
+		SELECT *
+			FROM
+			  (SELECT rownum rn, oseq, odseq, pseq, quantity, pname, id, name, discount, totalprice, zip_num, address
+             ,phone, price2, image, memo,indate, result
+			     FROM order_view
+			    WHERE id LIKE '%'||#{key}||'%'
+			    AND rownum <= #{criteria.pageNum} * #{criteria.numPerPage}
+			    ORDER BY odseq
+			   )
+			WHERE rn > (#{criteria.pageNum}-1) * #{criteria.numPerPage}
+			
+	]]>
+	</select>	
+	
+	
+</mapper>

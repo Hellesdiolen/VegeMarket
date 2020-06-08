@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="productDAO">
+	
+	<select id="getProduct" resultType="product">
+		SELECT * FROM product where
+		pseq=#{pseq}
+	</select>
+	
+	<select id="listByKindWithPaging" parameterType="HashMap" resultType="product">
+	<![CDATA[
+		SELECT pseq, regdate, name, price1, price2, useyn, saleyn, discount, image
+			FROM
+			  (SELECT rownum rn, pseq, regdate, name, price1, price2, useyn, saleyn, discount, image
+			     FROM product
+			    WHERE kind = #{kind}
+			    AND rownum <= #{criteria.pageNum} * #{criteria.numPerPage}
+			    ORDER BY pseq
+			   )
+			WHERE rn > (#{criteria.pageNum}-1) * #{criteria.numPerPage}
+			
+	]]>
+	</select>
+	
+	<select id="countProductListByKind" parameterType="String"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM product
+		WHERE kind = #{kind}
+		ORDER BY pseq
+	</select>		
+	
+	<select id="countProductList" parameterType="String"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM product
+		WHERE name LIKE '%'||#{name}||'%'
+		ORDER BY pseq
+	</select>			
+
+
+	<select id="listWithPaging" parameterType="HashMap"	resultType="product">
+	<![CDATA[
+		SELECT pseq, regdate, name, price1, price2, useyn, saleyn, discount, image
+			FROM
+			  (SELECT rownum rn, pseq, regdate, name, price1, price2, useyn, saleyn, discount, image
+			     FROM product
+			    WHERE name LIKE '%'||#{key}||'%'
+			    AND rownum <= #{criteria.pageNum} * #{criteria.numPerPage}
+			    ORDER BY pseq
+			   )
+			WHERE rn > (#{criteria.pageNum}-1) * #{criteria.numPerPage}
+			
+	]]>
+	</select>
+
+	<select id="mainListProduct" resultType="product">
+		SELECT pseq, regdate, name, price1, price2, useyn, saleyn, discount, image, kind
+		FROM product
+		WHERE pseq BETWEEN 1 and 8
+		ORDER BY pseq ASC
+	</select>
+	
+	<select id="listProduct" parameterType="String"
+		resultType="product">
+		SELECT pseq, regdate, name, price1, price2, useyn, saleyn, discount, kind, image
+		FROM product
+		WHERE name LIKE '%'||#{name}||'%'
+		ORDER BY pseq
+	</select>
+
+	<insert id="insertProduct">
+		INSERT INTO product(pseq, kind, name, saleyn, discount, price1, price2,
+		price3, content, image)
+		VALUES(product_seq.nextval, #{kind}, #{name}, #{saleyn}, #{discount},
+		#{price1}, #{price2},
+		#{price3}, #{content}, #{image})
+	</insert>
+
+	<update id="updateProduct">
+		UPDATE product SET kind=#{kind}, useyn=#{useyn},
+		name=#{name},
+		price1=#{price1}, price2=#{price2}, price3=#{price3},
+		content=#{content}, image=#{image}, saleyn=#{saleyn}, discount=#{discount}
+		WHERE pseq=#{pseq}
+	</update>
+
+</mapper>
