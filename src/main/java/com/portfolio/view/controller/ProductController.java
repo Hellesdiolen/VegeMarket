@@ -38,7 +38,7 @@ public class ProductController {
 		MemberVO loginUser = (MemberVO) request.getSession().getAttribute("loginUser");
 
 		if (loginUser == null) {
-			return "index";
+			return "member/login";
 		} else {
 
 			System.out.println("분류별 상품 목록보기");

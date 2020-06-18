@@ -71,14 +71,14 @@
 	<![CDATA[
 		SELECT *
 			FROM
-			  (SELECT rownum rn, oseq, odseq, pseq, quantity, pname, id, name, discount, totalprice, zip_num, address
-             ,phone, price2, image, memo,indate, result
-			     FROM order_view
+			  (SELECT rownum rn, A.*
+			     FROM (select * from order_view order by odseq DESC) A
 			    WHERE id LIKE '%'||#{key}||'%'
 			    AND rownum <= #{criteria.pageNum} * #{criteria.numPerPage}
 			    ORDER BY odseq
 			   )
 			WHERE rn > (#{criteria.pageNum}-1) * #{criteria.numPerPage}
+			ORDER BY odseq DESC
 			
 	]]>
 	</select>	

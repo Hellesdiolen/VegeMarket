@@ -40,7 +40,7 @@ public class MainpageController {
 			MemberVO loginUser = (MemberVO) request.getSession().getAttribute("loginUser");
 			
 			if(loginUser == null) {
-				return "index";
+				return "member/login";
 			} else {
 				criteria.setNumPerPage(8); // 각 페이지에 8개 제품 보이게 함.
 				//List<ProductVO> ProductList = productService.listProduct("");

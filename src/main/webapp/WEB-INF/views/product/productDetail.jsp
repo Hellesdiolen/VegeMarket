@@ -72,10 +72,6 @@
 								</button>
 							</span>
 						</div>
-						<div class="w-100"></div>
-						<div class="col-md-12">
-							<p style="color: #000;">여긴 주문가능수량 표시</p>
-						</div>
 					</div>
 
 					<p>

@@ -7,12 +7,6 @@
 	}
 </script>
 <section class="ftco-section ftco-cart">
-	<table class="table">
-		<tr class="text-center">
-			<td width="642">상품명 <input type="text" name="key"> <input class="btn btn-primary" type="button" name="btn_search" value="검색" onClick="go_Id_search()">
-			</td>
-		</tr>
-	</table>
 	<form name="formm" method="post">
 		<div class="container">
 			<div class="row">
